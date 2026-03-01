@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏔️ フジロック 2026 宿泊検索 | 苗場・越後湯沢エリア</title>
+  <style>
+    :root {
+      --primary: #1a5c2e;
+      --primary-light: #2d8a4e;
+      --primary-dark: #0e3a1c;
+      --accent: #e8a317;
+      --accent-light: #ffd54f;
+      --bg: #f0f4f0;
+      --card-bg: #ffffff;
+      --text: #1a1a1a;
+      --text-light: #666666;
+      --border: #dde5dd;
+      --success: #2e7d32;
+      --warning: #f57c00;
+      --danger: #c62828;
+      --tag-bg: #e8f5e9;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --shadow-hover: 0 4px 20px rgba(0,0,0,0.15);
+      --radius: 12px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ヘッダー */
+    .header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+      color: white;
+      padding: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .header-title .subtitle {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      font-weight: 400;
+    }
+
+    .header-badge {
+      background: var(--accent);
+      color: var(--primary-dark);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    /* 検索パネル */
+    .search-panel {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      padding: 16px 24px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .search-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .search-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .search-group label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      opacity: 0.9;
+      color: white;
+    }
+
+    .search-group select,
+    .search-group input {
+      padding: 8px 12px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.95);
+      color: var(--text);
+      font-size: 0.9rem;
+      min-width: 140px;
+    }
+
+    .search-group select:focus,
+    .search-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(232,163,23,0.3);
+    }
+
+    .btn-search {
+      padding: 8px 24px;
+      background: var(--accent);
+      color: var(--primary-dark);
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-search:hover {
+      background: var(--accent-light);
+      transform: translateY(-1px);
+    }
+
+    /* フィルターバー */
+    .filter-bar {
+      max-width: 1400px;
+      margin: 16px auto;
+      padding: 0 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .filter-tag {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .filter-tag:hover {
+      border-color: var(--primary);
+      background: var(--tag-bg);
+    }
+
+    .filter-tag.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* 結果サマリ */
+    .results-summary {
+      max-width: 1400px;
+      margin: 0 auto 16px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .results-count {
+      font-size: 0.95rem;
+      color: var(--text-light);
+    }
+
+    .results-count strong {
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+
+    .sort-select {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* ホテルカード */
+    .hotel-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 20px;
+    }
+
+    .hotel-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: all 0.3s;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .hotel-card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    .hotel-card.unavailable {
+      opacity: 0.55;
+    }
+
+    .card-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .availability-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      backdrop-filter: blur(8px);
+    }
+
+    .availability-badge.available {
+      background: rgba(46, 125, 50, 0.9);
+      color: white;
+    }
+
+    .availability-badge.limited {
+      background: rgba(245, 124, 0, 0.9);
+      color: white;
+    }
+
+    .availability-badge.full {
+      background: rgba(198, 40, 40, 0.9);
+      color: white;
+    }
+
+    .area-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(26, 92, 46, 0.9);
+      color: white;
+      backdrop-filter: blur(8px);
+    }
+
+    .card-body {
+      padding: 16px 20px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .hotel-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .hotel-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .hotel-meta {
+      font-size: 0.82rem;
+      color: var(--text-light);
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .hotel-meta .distance {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .hotel-desc {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      line-height: 1.5;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .hotel-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .hotel-tag {
+      padding: 2px 8px;
+      background: var(--tag-bg);
+      color: var(--primary);
+      border-radius: 10px;
+      font-size: 0.72rem;
+      font-weight: 500;
+    }
+
+    .amenities-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+
+    .amenity {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    /* 空室・料金セクション */
+    .availability-section {
+      background: #f8faf8;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .availability-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .room-combo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+
+    .room-combo:last-child {
+      border-bottom: none;
+    }
+
+    .room-combo-name {
+      flex: 1;
+      color: var(--text);
+    }
+
+    .room-combo-price {
+      font-weight: 700;
+      color: var(--primary-dark);
+      white-space: nowrap;
+    }
+
+    .room-combo-per-person {
+      font-size: 0.72rem;
+      color: var(--text-light);
+      margin-left: 8px;
+    }
+
+    .total-price-box {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .total-price-label {
+      font-size: 0.78rem;
+      opacity: 0.9;
+    }
+
+    .total-price-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .total-price-sub {
+      font-size: 0.72rem;
+      opacity: 0.8;
+    }
+
+    .no-availability {
+      text-align: center;
+      padding: 16px;
+      color: var(--danger);
+      font-weight: 600;
+      font-size: 0.9rem;
+      background: #fff3f3;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    /* 予約ボタン */
+    .booking-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-book {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      min-width: 90px;
+    }
+
+    .btn-book.rakuten {
+      background: #bf0000;
+      color: white;
+    }
+
+    .btn-book.jalan {
+      background: #ff6600;
+      color: white;
+    }
+
+    .btn-book.official {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-book:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+    }
+
+    /* ローディング */
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: var(--text-light);
+      font-size: 1.1rem;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 統計パネル */
+    .stats-panel {
+      max-width: 1400px;
+      margin: 16px auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    /* フッター情報 */
+    .info-banner {
+      max-width: 1400px;
+      margin: 0 auto 16px;
+      padding: 0 24px;
+    }
+
+    .info-banner-inner {
+      background: linear-gradient(135deg, #fff8e1, #fff3c4);
+      border: 1px solid #ffe082;
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      font-size: 0.85rem;
+      color: #5d4037;
+      line-height: 1.6;
+    }
+
+    .info-banner-inner strong {
+      color: #e65100;
+    }
+
+    /* フッター */
+    footer {
+      background: var(--primary-dark);
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      padding: 20px;
+      font-size: 0.8rem;
+      margin-top: 40px;
+    }
+
+    /* モバイル対応 */
+    @media (max-width: 768px) {
+      .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 12px 16px;
+      }
+
+      .search-inner {
+        flex-direction: column;
+      }
+
+      .search-group {
+        width: 100%;
+      }
+
+      .search-group select,
+      .search-group input {
+        width: 100%;
+      }
+
+      .btn-search {
+        width: 100%;
+        padding: 12px;
+      }
+
+      .hotel-grid {
+        grid-template-columns: 1fr;
+        padding: 0 12px 40px;
+      }
+
+      .filter-bar {
+        padding: 0 12px;
+      }
+
+      .stats-panel {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 12px;
+      }
+
+      .info-banner {
+        padding: 0 12px;
+      }
+
+      .results-summary {
+        padding: 0 12px;
+      }
+    }
+
+    /* 空きなしオーバーレイ */
+    .sold-out-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .sold-out-text {
+      background: var(--danger);
+      color: white;
+      padding: 8px 24px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 1.2rem;
+      transform: rotate(-5deg);
+    }
+
+    /* 詳細展開 */
+    .detail-toggle {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 0.82rem;
+      cursor: pointer;
+      padding: 4px 0;
+      font-weight: 600;
+    }
+
+    .detail-toggle:hover {
+      text-decoration: underline;
+    }
+
+    .room-details {
+      display: none;
+    }
+
+    .room-details.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="header-top">
+      <div class="header-title">
+        <div>
+          <h1>🏔️ フジロック 2026 宿泊検索</h1>
+          <div class="subtitle">苗場・越後湯沢エリアの空き部屋をリアルタイム検索</div>
+        </div>
+      </div>
+      <div class="header-badge">🎸 FUJI ROCK FESTIVAL '26</div>
+    </div>
+
+    <!-- 検索パネル -->
+    <div class="search-panel">
+      <div class="search-inner">
+        <div class="search-group">
+          <label>📍 エリア</label>
+          <select id="area">
+            <option value="all">すべて</option>
+            <option value="苗場">苗場（会場周辺）</option>
+            <option value="越後湯沢">越後湯沢駅周辺</option>
+          </select>
+        </div>
+        <div class="search-group">
+          <label>📅 チェックイン</label>
+          <input type="date" id="checkin" value="2026-07-23">
+        </div>
+        <div class="search-group">
+          <label>📅 チェックアウト</label>
+          <input type="date" id="checkout" value="2026-07-27">
+        </div>
+        <div class="search-group">
+          <label>👥 宿泊人数</label>
+          <select id="guests">
+            <option value="2">2名</option>
+            <option value="4">4名</option>
+            <option value="6">6名</option>
+            <option value="8">8名</option>
+            <option value="10" selected>10名</option>
+            <option value="12">12名</option>
+            <option value="15">15名</option>
+          </select>
+        </div>
+        <div class="search-group">
+          <label>💰 1泊予算上限</label>
+          <select id="budget">
+            <option value="">制限なし</option>
+            <option value="20000">〜2万円</option>
+            <option value="30000">〜3万円</option>
+            <option value="50000">〜5万円</option>
+            <option value="80000">〜8万円</option>
+            <option value="100000">〜10万円</option>
+          </select>
+        </div>
+        <div class="search-group" style="justify-content: flex-end;">
+          <button class="btn-search" onclick="searchHotels()">🔍 空室検索</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 情報バナー -->
+  <div class="info-banner" style="margin-top: 16px;">
+    <div class="info-banner-inner">
+      ⚠️ <strong>フジロック 2026 開催期間：7/23(木)〜7/25(土) 前夜祭7/23</strong><br>
+      苗場エリアは会場に近く便利ですが、予約がすぐ埋まります。越後湯沢駅周辺からはシャトルバス（約40分）が運行されます。
+      空室状況はシミュレーションデータです。実際の予約は各予約サイトでご確認ください。
+    </div>
+  </div>
+
+  <!-- 統計パネル -->
+  <div class="stats-panel" id="statsPanel">
+    <!-- JS で動的に生成 -->
+  </div>
+
+  <!-- フィルター -->
+  <div class="filter-bar" id="filterBar">
+    <span style="font-size: 0.82rem; color: var(--text-light); font-weight: 600;">絞り込み:</span>
+    <span class="filter-tag" data-tag="onlyAvailable" onclick="toggleFilter(this)">空室ありのみ</span>
+    <span class="filter-tag" data-tag="温泉" onclick="toggleTag(this)">♨️ 温泉</span>
+    <span class="filter-tag" data-tag="駅近" onclick="toggleTag(this)">🚃 駅近</span>
+    <span class="filter-tag" data-tag="グループ向け" onclick="toggleTag(this)">👥 グループ向け</span>
+    <span class="filter-tag" data-tag="リーズナブル" onclick="toggleTag(this)">💴 リーズナブル</span>
+    <span class="filter-tag" data-tag="会場至近" onclick="toggleTag(this)">🎵 会場至近</span>
+    <span class="filter-tag" data-tag="キッチン付き" onclick="toggleTag(this)">🍳 キッチン付き</span>
+    <span class="filter-tag" data-tag="高評価" onclick="toggleTag(this)">⭐ 高評価</span>
+  </div>
+
+  <!-- 結果サマリ -->
+  <div class="results-summary" id="resultsSummary">
+    <div class="results-count" id="resultsCount">検索中...</div>
+    <select class="sort-select" id="sortSelect" onchange="searchHotels()">
+      <option value="">並び替え: デフォルト</option>
+      <option value="price">安い順</option>
+      <option value="rating">評価順</option>
+    </select>
+  </div>
+
+  <!-- ホテル一覧 -->
+  <div class="hotel-grid" id="hotelGrid">
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <div>宿泊施設を検索しています...</div>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <footer>
+    <p>フジロック 2026 宿泊検索アプリ | 苗場・越後湯沢エリア限定</p>
+    <p style="margin-top:4px; font-size:0.72rem;">
+      ※ 空室情報はシミュレーションデータです。実際の予約は各公式サイトでご確認ください。
+    </p>
+  </footer>
+
+  <script>
+    // ===========================
+    // 状態管理
+    // ===========================
+    let currentFilters = {
+      tags: [],
+      onlyAvailable: false
+    };
+
+    // ===========================
+    // 検索実行
+    // ===========================
+    async function searchHotels() {
+      const area = document.getElementById('area').value;
+      const checkin = document.getElementById('checkin').value;
+      const checkout = document.getElementById('checkout').value;
+      const guests = document.getElementById('guests').value;
+      const budget = document.getElementById('budget').value;
+      const sort = document.getElementById('sortSelect').value;
+
+      const params = new URLSearchParams({
+        area,
+        checkin,
+        checkout,
+        guests,
+        sort,
+        onlyAvailable: currentFilters.onlyAvailable ? 'true' : 'false'
+      });
+
+      if (budget) params.set('budget', budget);
+      if (currentFilters.tags.length > 0) params.set('tags', currentFilters.tags.join(','));
+
+      // ローディング表示
+      document.getElementById('hotelGrid').innerHTML = `
+        <div class="loading" style="grid-column: 1/-1;">
+          <div class="loading-spinner"></div>
+          <div>宿泊施設を検索しています...</div>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(`/api/hotels?${params}`);
+        const data = await response.json();
+        renderStats(data);
+        renderResults(data);
+      } catch (error) {
+        console.error('検索エラー:', error);
+        document.getElementById('hotelGrid').innerHTML = `
+          <div class="loading" style="grid-column: 1/-1;">
+            <div>⚠️ 検索中にエラーが発生しました。再度お試しください。</div>
+          </div>
+        `;
+      }
+    }
+
+    // ===========================
+    // 統計パネル描画
+    // ===========================
+    function renderStats(data) {
+      const panel = document.getElementById('statsPanel');
+      const nights = data.searchParams.nights;
+      const guests = data.searchParams.guests;
+
+      // 最安値の計算
+      let cheapest = null;
+      for (const h of data.hotels) {
+        if (h.cheapestCombination) {
+          const ppn = h.cheapestCombination.pricePerPersonPerNight;
+          if (!cheapest || ppn < cheapest) cheapest = ppn;
+        }
+      }
+
+      panel.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-value">${data.totalResults}</div>
+          <div class="stat-label">検索対象施設</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color: ${data.availableCount > 0 ? 'var(--success)' : 'var(--danger)'}">
+            ${data.availableCount}
+          </div>
+          <div class="stat-label">${guests}名で空室あり</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${nights}泊</div>
+          <div class="stat-label">${data.searchParams.checkin} 〜 ${data.searchParams.checkout}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${cheapest ? '¥' + cheapest.toLocaleString() : '-'}</div>
+          <div class="stat-label">最安 1人1泊あたり</div>
+        </div>
+      `;
+    }
+
+    // ===========================
+    // 結果描画
+    // ===========================
+    function renderResults(data) {
+      const grid = document.getElementById('hotelGrid');
+      const count = document.getElementById('resultsCount');
+
+      count.innerHTML = `
+        全 <strong>${data.totalResults}</strong> 施設中 
+        <strong style="color: ${data.availableCount > 0 ? 'var(--success)' : 'var(--danger)'}">
+          ${data.availableCount}
+        </strong> 施設で ${data.searchParams.guests}名の空室あり
+      `;
+
+      if (data.hotels.length === 0) {
+        grid.innerHTML = `
+          <div class="loading" style="grid-column: 1/-1;">
+            <div>🔍 条件に一致する宿泊施設が見つかりませんでした。条件を変更して再検索してください。</div>
+          </div>
+        `;
+        return;
+      }
+
+      const nights = data.searchParams.nights;
+      const guests = data.searchParams.guests;
+
+      grid.innerHTML = data.hotels.map(hotel => {
+        const isAvailable = hotel.hasAvailability;
+        const cheapest = hotel.cheapestCombination;
+
+        // 空室状況バッジの計算
+        let badgeClass, badgeText;
+        if (!isAvailable) {
+          badgeClass = 'full';
+          badgeText = '満室';
+        } else {
+          // 残りの空き具合を判定
+          const totalAvail = hotel.availableRooms.reduce((s, r) => s + r.availableCount, 0);
+          if (totalAvail <= 2) {
+            badgeClass = 'limited';
+            badgeText = `残りわずか（空${totalAvail}室）`;
+          } else {
+            badgeClass = 'available';
+            badgeText = `空室あり（${totalAvail}室）`;
+          }
+        }
+
+        return `
+          <div class="hotel-card ${!isAvailable ? 'unavailable' : ''}" style="position:relative;">
+            ${!isAvailable ? `
+              <div class="sold-out-overlay">
+                <div class="sold-out-text">満室</div>
+              </div>
+            ` : ''}
+            <img class="card-image" src="${hotel.imageUrl}" alt="${hotel.name}" loading="lazy">
+            <span class="area-badge">📍 ${hotel.area}</span>
+            <span class="availability-badge ${badgeClass}">${badgeText}</span>
+
+            <div class="card-body">
+              <div class="card-header">
+                <div class="hotel-name">${hotel.name}</div>
+                <div class="hotel-rating">⭐ ${hotel.rating} <span style="font-size:0.72rem; color:#999;">(${hotel.reviewCount}件)</span></div>
+              </div>
+
+              <div class="hotel-meta">
+                <span class="distance">🎵 会場まで: ${hotel.distanceToVenue}</span>
+                <span>📍 ${hotel.areaDetail}</span>
+              </div>
+
+              <div class="hotel-desc">${hotel.description}</div>
+
+              <div class="hotel-tags">
+                ${hotel.tags.map(t => `<span class="hotel-tag">${t}</span>`).join('')}
+              </div>
+
+              <div class="amenities-row">
+                ${hotel.amenities.slice(0, 5).map(a => `<span class="amenity">✓ ${a}</span>`).join('')}
+                ${hotel.amenities.length > 5 ? `<span class="amenity">他${hotel.amenities.length - 5}件</span>` : ''}
+              </div>
+
+              ${isAvailable ? `
+                <!-- 最安プラン -->
+                <div class="total-price-box">
+                  <div>
+                    <div class="total-price-label">最安プラン（${nights}泊${guests}名）</div>
+                    <div class="total-price-sub">${cheapest.roomSummary}</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div class="total-price-value">¥${cheapest.totalPriceAllNights.toLocaleString()}</div>
+                    <div class="total-price-sub">1人あたり ¥${(Math.ceil(cheapest.totalPriceAllNights / guests)).toLocaleString()}</div>
+                  </div>
+                </div>
+
+                <!-- 空室組み合わせ詳細 -->
+                <div class="availability-section">
+                  <div class="availability-title">
+                    🛏️ 予約可能な部屋の組み合わせ
+                    <button class="detail-toggle" onclick="toggleDetails(${hotel.id})">
+                      全${hotel.combinations.length}パターン表示
+                    </button>
+                  </div>
+                  <div class="room-details" id="details-${hotel.id}">
+                    ${hotel.combinations.slice(0, 5).map(combo => `
+                      <div class="room-combo">
+                        <span class="room-combo-name">${combo.roomSummary}</span>
+                        <span>
+                          <span class="room-combo-price">¥${(combo.totalPrice * nights).toLocaleString()}</span>
+                          <span class="room-combo-per-person">(@¥${(Math.ceil(combo.totalPrice * nights / guests)).toLocaleString()}/人)</span>
+                        </span>
+                      </div>
+                    `).join('')}
+                    ${hotel.combinations.length > 5 ? `
+                      <div style="text-align:center; padding:4px; font-size:0.75rem; color:var(--text-light);">
+                        他 ${hotel.combinations.length - 5} パターンあり
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              ` : `
+                <div class="no-availability">
+                  😞 ${guests}名で宿泊可能な空室がありません
+                </div>
+              `}
+
+              <!-- 予約リンク -->
+              <div class="booking-buttons">
+                <a href="${hotel.bookingUrls.rakuten}" target="_blank" rel="noopener" class="btn-book rakuten">
+                  楽天トラベル
+                </a>
+                <a href="${hotel.bookingUrls.jalan}" target="_blank" rel="noopener" class="btn-book jalan">
+                  じゃらん
+                </a>
+                ${hotel.bookingUrls.official ? `
+                  <a href="${hotel.bookingUrls.official}" target="_blank" rel="noopener" class="btn-book official">
+                    公式サイト
+                  </a>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ===========================
+    // フィルター操作
+    // ===========================
+    function toggleFilter(el) {
+      el.classList.toggle('active');
+      currentFilters.onlyAvailable = el.classList.contains('active');
+      searchHotels();
+    }
+
+    function toggleTag(el) {
+      el.classList.toggle('active');
+      const tag = el.dataset.tag;
+      if (el.classList.contains('active')) {
+        currentFilters.tags.push(tag);
+      } else {
+        currentFilters.tags = currentFilters.tags.filter(t => t !== tag);
+      }
+      searchHotels();
+    }
+
+    function toggleDetails(hotelId) {
+      const details = document.getElementById(`details-${hotelId}`);
+      details.classList.toggle('show');
+    }
+
+    // ===========================
+    // 初期検索
+    // ===========================
+    document.addEventListener('DOMContentLoaded', () => {
+      searchHotels();
+    });
+  </script>
+</body>
+</html>
