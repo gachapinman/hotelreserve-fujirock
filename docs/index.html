@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏔️ フジロック 2026 宿泊検索 | 苗場・越後湯沢エリア</title>
+  <meta name="description" content="フジロック2026の宿泊施設検索。苗場・越後湯沢エリアのホテル・旅館の空室をチェック。10名グループ対応。">
+  <style>
+    :root {
+      --primary: #1a5c2e;
+      --primary-light: #2d8a4e;
+      --primary-dark: #0e3a1c;
+      --accent: #e8a317;
+      --accent-light: #ffd54f;
+      --bg: #f0f4f0;
+      --card-bg: #ffffff;
+      --text: #1a1a1a;
+      --text-light: #666666;
+      --border: #dde5dd;
+      --success: #2e7d32;
+      --warning: #f57c00;
+      --danger: #c62828;
+      --tag-bg: #e8f5e9;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --shadow-hover: 0 4px 20px rgba(0,0,0,0.15);
+      --radius: 12px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+      color: white;
+      padding: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .header-title { display: flex; align-items: center; gap: 12px; }
+    .header-title h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.5px; }
+    .header-title .subtitle { font-size: 0.85rem; opacity: 0.85; font-weight: 400; }
+    .header-badge {
+      background: var(--accent);
+      color: var(--primary-dark);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+    .search-panel {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      padding: 16px 24px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+    .search-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: end;
+    }
+    .search-group { display: flex; flex-direction: column; gap: 4px; }
+    .search-group label { font-size: 0.75rem; font-weight: 600; opacity: 0.9; color: white; }
+    .search-group select,
+    .search-group input {
+      padding: 8px 12px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.95);
+      color: var(--text);
+      font-size: 0.9rem;
+      min-width: 140px;
+    }
+    .search-group select:focus,
+    .search-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(232,163,23,0.3);
+    }
+    .btn-search {
+      padding: 8px 24px;
+      background: var(--accent);
+      color: var(--primary-dark);
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-search:hover { background: var(--accent-light); transform: translateY(-1px); }
+    .filter-bar {
+      max-width: 1400px;
+      margin: 16px auto;
+      padding: 0 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .filter-tag {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .filter-tag:hover { border-color: var(--primary); background: var(--tag-bg); }
+    .filter-tag.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .results-summary {
+      max-width: 1400px;
+      margin: 0 auto 16px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .results-count { font-size: 0.95rem; color: var(--text-light); }
+    .results-count strong { color: var(--primary); font-size: 1.2rem; }
+    .sort-select {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .hotel-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 20px;
+    }
+    .hotel-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: all 0.3s;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    .hotel-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+    .hotel-card.unavailable { opacity: 0.55; }
+    .card-image { width: 100%; height: 180px; object-fit: cover; display: block; }
+    .availability-badge {
+      position: absolute; top: 12px; right: 12px;
+      padding: 4px 12px; border-radius: 16px;
+      font-size: 0.78rem; font-weight: 700;
+      backdrop-filter: blur(8px);
+    }
+    .availability-badge.available { background: rgba(46, 125, 50, 0.9); color: white; }
+    .availability-badge.limited { background: rgba(245, 124, 0, 0.9); color: white; }
+    .availability-badge.full { background: rgba(198, 40, 40, 0.9); color: white; }
+    .area-badge {
+      position: absolute; top: 12px; left: 12px;
+      padding: 4px 10px; border-radius: 16px;
+      font-size: 0.75rem; font-weight: 600;
+      background: rgba(26, 92, 46, 0.9); color: white;
+      backdrop-filter: blur(8px);
+    }
+    .card-body { padding: 16px 20px; }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .hotel-name { font-size: 1.15rem; font-weight: 700; color: var(--text); line-height: 1.3; }
+    .hotel-rating { display: flex; align-items: center; gap: 4px; font-size: 0.85rem; color: var(--accent); font-weight: 600; white-space: nowrap; }
+    .hotel-meta { font-size: 0.82rem; color: var(--text-light); margin-bottom: 8px; display: flex; flex-direction: column; gap: 2px; }
+    .hotel-meta .distance { color: var(--primary); font-weight: 600; }
+    .hotel-desc {
+      font-size: 0.85rem; color: var(--text-light); line-height: 1.5; margin-bottom: 12px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .hotel-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+    .hotel-tag { padding: 2px 8px; background: var(--tag-bg); color: var(--primary); border-radius: 10px; font-size: 0.72rem; font-weight: 500; }
+    .amenities-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; font-size: 0.75rem; color: var(--text-light); }
+    .amenity { display: flex; align-items: center; gap: 2px; }
+    .availability-section { background: #f8faf8; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+    .availability-title { font-size: 0.82rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 4px; }
+    .room-combo { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+    .room-combo:last-child { border-bottom: none; }
+    .room-combo-name { flex: 1; color: var(--text); }
+    .room-combo-price { font-weight: 700; color: var(--primary-dark); white-space: nowrap; }
+    .room-combo-per-person { font-size: 0.72rem; color: var(--text-light); margin-left: 8px; }
+    .total-price-box {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .total-price-label { font-size: 0.78rem; opacity: 0.9; }
+    .total-price-value { font-size: 1.3rem; font-weight: 700; }
+    .total-price-sub { font-size: 0.72rem; opacity: 0.8; }
+    .no-availability { text-align: center; padding: 16px; color: var(--danger); font-weight: 600; font-size: 0.9rem; background: #fff3f3; border-radius: 8px; margin-bottom: 12px; }
+    .booking-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-book { flex: 1; padding: 8px 12px; border: none; border-radius: 8px; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; text-align: center; text-decoration: none; display: block; min-width: 90px; }
+    .btn-book.rakuten { background: #bf0000; color: white; }
+    .btn-book.jalan { background: #ff6600; color: white; }
+    .btn-book.official { background: var(--primary); color: white; }
+    .btn-book:hover { opacity: 0.85; transform: translateY(-1px); }
+    .loading { text-align: center; padding: 60px; color: var(--text-light); font-size: 1.1rem; }
+    .loading-spinner { display: inline-block; width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .stats-panel { max-width: 1400px; margin: 16px auto; padding: 0 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .stat-card { background: white; border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .stat-value { font-size: 2rem; font-weight: 800; color: var(--primary); line-height: 1; }
+    .stat-label { font-size: 0.8rem; color: var(--text-light); margin-top: 4px; }
+    .info-banner { max-width: 1400px; margin: 0 auto 16px; padding: 0 24px; }
+    .info-banner-inner { background: linear-gradient(135deg, #fff8e1, #fff3c4); border: 1px solid #ffe082; border-radius: var(--radius); padding: 14px 20px; font-size: 0.85rem; color: #5d4037; line-height: 1.6; }
+    .info-banner-inner strong { color: #e65100; }
+    footer { background: var(--primary-dark); color: rgba(255,255,255,0.7); text-align: center; padding: 20px; font-size: 0.8rem; margin-top: 40px; }
+    .sold-out-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; z-index: 1; pointer-events: none; }
+    .sold-out-text { background: var(--danger); color: white; padding: 8px 24px; border-radius: 8px; font-weight: 800; font-size: 1.2rem; transform: rotate(-5deg); }
+    .detail-toggle { background: none; border: none; color: var(--primary); font-size: 0.82rem; cursor: pointer; padding: 4px 0; font-weight: 600; }
+    .detail-toggle:hover { text-decoration: underline; }
+    .room-details { display: none; }
+    .room-details.show { display: block; }
+    @media (max-width: 768px) {
+      .header-top { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px 16px; }
+      .search-inner { flex-direction: column; }
+      .search-group { width: 100%; }
+      .search-group select, .search-group input { width: 100%; }
+      .btn-search { width: 100%; padding: 12px; }
+      .hotel-grid { grid-template-columns: 1fr; padding: 0 12px 40px; }
+      .filter-bar { padding: 0 12px; }
+      .stats-panel { grid-template-columns: repeat(2, 1fr); padding: 0 12px; }
+      .info-banner { padding: 0 12px; }
+      .results-summary { padding: 0 12px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-top">
+      <div class="header-title">
+        <div>
+          <h1>🏔️ フジロック 2026 宿泊検索</h1>
+          <div class="subtitle">苗場・越後湯沢エリアの空き部屋をリアルタイム検索</div>
+        </div>
+      </div>
+      <div class="header-badge">🎸 FUJI ROCK FESTIVAL '26</div>
+    </div>
+    <div class="search-panel">
+      <div class="search-inner">
+        <div class="search-group">
+          <label>📍 エリア</label>
+          <select id="area">
+            <option value="all">すべて</option>
+            <option value="苗場">苗場（会場周辺）</option>
+            <option value="越後湯沢">越後湯沢駅周辺</option>
+          </select>
+        </div>
+        <div class="search-group">
+          <label>📅 チェックイン</label>
+          <input type="date" id="checkin" value="2026-07-23">
+        </div>
+        <div class="search-group">
+          <label>📅 チェックアウト</label>
+          <input type="date" id="checkout" value="2026-07-27">
+        </div>
+        <div class="search-group">
+          <label>👥 宿泊人数</label>
+          <select id="guests">
+            <option value="2">2名</option>
+            <option value="4">4名</option>
+            <option value="6">6名</option>
+            <option value="8">8名</option>
+            <option value="10" selected>10名</option>
+            <option value="12">12名</option>
+            <option value="15">15名</option>
+          </select>
+        </div>
+        <div class="search-group">
+          <label>💰 1泊予算上限</label>
+          <select id="budget">
+            <option value="">制限なし</option>
+            <option value="20000">〜2万円</option>
+            <option value="30000">〜3万円</option>
+            <option value="50000">〜5万円</option>
+            <option value="80000">〜8万円</option>
+            <option value="100000">〜10万円</option>
+          </select>
+        </div>
+        <div class="search-group" style="justify-content: flex-end;">
+          <button class="btn-search" onclick="searchHotels()">🔍 空室検索</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="info-banner" style="margin-top: 16px;">
+    <div class="info-banner-inner">
+      ⚠️ <strong>フジロック 2026 開催期間：7/23(木)〜7/25(土) 前夜祭7/23</strong><br>
+      苗場エリアは会場に近く便利ですが、予約がすぐ埋まります。越後湯沢駅周辺からはシャトルバス（約40分）が運行されます。
+      空室状況はシミュレーションデータです。実際の予約は各予約サイトでご確認ください。
+    </div>
+  </div>
+
+  <div class="stats-panel" id="statsPanel"></div>
+
+  <div class="filter-bar" id="filterBar">
+    <span style="font-size: 0.82rem; color: var(--text-light); font-weight: 600;">絞り込み:</span>
+    <span class="filter-tag" data-tag="onlyAvailable" onclick="toggleFilter(this)">空室ありのみ</span>
+    <span class="filter-tag" data-tag="温泉" onclick="toggleTag(this)">♨️ 温泉</span>
+    <span class="filter-tag" data-tag="駅近" onclick="toggleTag(this)">🚃 駅近</span>
+    <span class="filter-tag" data-tag="グループ向け" onclick="toggleTag(this)">👥 グループ向け</span>
+    <span class="filter-tag" data-tag="リーズナブル" onclick="toggleTag(this)">💴 リーズナブル</span>
+    <span class="filter-tag" data-tag="会場至近" onclick="toggleTag(this)">🎵 会場至近</span>
+    <span class="filter-tag" data-tag="キッチン付き" onclick="toggleTag(this)">🍳 キッチン付き</span>
+    <span class="filter-tag" data-tag="高評価" onclick="toggleTag(this)">⭐ 高評価</span>
+  </div>
+
+  <div class="results-summary" id="resultsSummary">
+    <div class="results-count" id="resultsCount">検索中...</div>
+    <select class="sort-select" id="sortSelect" onchange="searchHotels()">
+      <option value="">並び替え: デフォルト</option>
+      <option value="price">安い順</option>
+      <option value="rating">評価順</option>
+    </select>
+  </div>
+
+  <div class="hotel-grid" id="hotelGrid">
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <div>宿泊施設を検索しています...</div>
+    </div>
+  </div>
+
+  <footer>
+    <p>フジロック 2026 宿泊検索アプリ | 苗場・越後湯沢エリア限定</p>
+    <p style="margin-top:4px; font-size:0.72rem;">※ 空室情報はシミュレーションデータです。実際の予約は各公式サイトでご確認ください。</p>
+  </footer>
+
+  <script>
+    // ===========================
+    // ホテルデータ（静的埋め込み）
+    // ===========================
+    const hotels = [
+      {
+        id: 1, name: "苗場プリンスホテル", area: "苗場", areaDetail: "苗場スキー場直結",
+        distanceToVenue: "徒歩0分（会場隣接）", address: "新潟県南魚沼郡湯沢町三国202",
+        description: "フジロック会場に最も近い大型リゾートホテル。会場まで徒歩圏内で、フジロック期間中は特別プランあり。温泉大浴場、複数レストラン完備。",
+        amenities: ["温泉", "レストラン", "駐車場", "Wi-Fi", "コンビニ", "ランドリー", "送迎バス"],
+        roomTypes: [
+          { type: "ツインルーム", capacity: 2, pricePerNight: 25000, totalRooms: 50, bookedRooms: 48 },
+          { type: "トリプルルーム", capacity: 3, pricePerNight: 35000, totalRooms: 30, bookedRooms: 29 },
+          { type: "ファミリールーム", capacity: 4, pricePerNight: 45000, totalRooms: 20, bookedRooms: 18 },
+          { type: "デラックスルーム（6名）", capacity: 6, pricePerNight: 65000, totalRooms: 10, bookedRooms: 8 },
+          { type: "スイートルーム（8名）", capacity: 8, pricePerNight: 120000, totalRooms: 5, bookedRooms: 4 }
+        ],
+        rating: 4.2, reviewCount: 1856,
+        imageUrl: "https://placehold.co/400x250/2d5016/white?text=苗場プリンスホテル",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/HOTEL/6498/6498.html", jalan: "https://www.jalan.net/yad325498/", official: "https://www.princehotels.co.jp/naeba/" },
+        tags: ["会場至近", "大型", "温泉", "人気"]
+      },
+      {
+        id: 2, name: "ロッヂ丘", area: "苗場", areaDetail: "苗場スキー場周辺",
+        distanceToVenue: "徒歩約10分", address: "新潟県南魚沼郡湯沢町三国478-4",
+        description: "苗場エリアのアットホームなロッジ。リーズナブルな料金設定で、グループ利用に最適。自炊可能なキッチンも完備。",
+        amenities: ["駐車場", "Wi-Fi", "自炊キッチン", "乾燥室"],
+        roomTypes: [
+          { type: "和室8畳（4名）", capacity: 4, pricePerNight: 8000, totalRooms: 6, bookedRooms: 5 },
+          { type: "和室12畳（6名）", capacity: 6, pricePerNight: 12000, totalRooms: 4, bookedRooms: 3 },
+          { type: "大部屋（10名）", capacity: 10, pricePerNight: 20000, totalRooms: 2, bookedRooms: 1 }
+        ],
+        rating: 3.8, reviewCount: 234,
+        imageUrl: "https://placehold.co/400x250/4a6741/white?text=ロッヂ丘",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/", jalan: "https://www.jalan.net/", official: "" },
+        tags: ["リーズナブル", "グループ向け", "自炊可"]
+      },
+      {
+        id: 3, name: "苗場ホワイトパレス", area: "苗場", areaDetail: "苗場スキー場周辺",
+        distanceToVenue: "徒歩約15分", address: "新潟県南魚沼郡湯沢町三国",
+        description: "苗場の老舗宿泊施設。フジロック期間中はリピーターに支持される穴場的存在。グループ向けの大部屋あり。",
+        amenities: ["駐車場", "Wi-Fi", "大浴場", "食堂"],
+        roomTypes: [
+          { type: "和室8畳", capacity: 4, pricePerNight: 9500, totalRooms: 8, bookedRooms: 7 },
+          { type: "和室10畳", capacity: 5, pricePerNight: 12000, totalRooms: 5, bookedRooms: 5 },
+          { type: "和洋室（8名）", capacity: 8, pricePerNight: 22000, totalRooms: 3, bookedRooms: 2 }
+        ],
+        rating: 3.6, reviewCount: 187,
+        imageUrl: "https://placehold.co/400x250/5a7a50/white?text=苗場ホワイトパレス",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/", jalan: "https://www.jalan.net/", official: "" },
+        tags: ["グループ向け", "大浴場"]
+      },
+      {
+        id: 4, name: "ペンション もみの木", area: "苗場", areaDetail: "苗場スキー場周辺",
+        distanceToVenue: "車約5分", address: "新潟県南魚沼郡湯沢町三国",
+        description: "自然に囲まれた静かなペンション。手作り料理が好評。少人数グループに最適。",
+        amenities: ["駐車場", "Wi-Fi", "朝食付き", "BBQ設備"],
+        roomTypes: [
+          { type: "ツインルーム", capacity: 2, pricePerNight: 7500, totalRooms: 5, bookedRooms: 4 },
+          { type: "4人部屋", capacity: 4, pricePerNight: 14000, totalRooms: 3, bookedRooms: 2 },
+          { type: "6人部屋", capacity: 6, pricePerNight: 20000, totalRooms: 2, bookedRooms: 1 }
+        ],
+        rating: 4.3, reviewCount: 145,
+        imageUrl: "https://placehold.co/400x250/6b8f5e/white?text=ペンション+もみの木",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/", jalan: "https://www.jalan.net/", official: "" },
+        tags: ["ペンション", "食事付き", "静か"]
+      },
+      {
+        id: 5, name: "ロッジ ふじや", area: "苗場", areaDetail: "苗場スキー場周辺",
+        distanceToVenue: "徒歩約20分", address: "新潟県南魚沼郡湯沢町三国",
+        description: "フジロックファンに人気のロッジ。大人数向けプランが充実。共用リビングでの交流も魅力。",
+        amenities: ["駐車場", "Wi-Fi", "共用キッチン", "共用リビング", "乾燥室"],
+        roomTypes: [
+          { type: "ドミトリー（1名）", capacity: 1, pricePerNight: 4500, totalRooms: 20, bookedRooms: 18 },
+          { type: "和室6畳（3名）", capacity: 3, pricePerNight: 9000, totalRooms: 5, bookedRooms: 4 },
+          { type: "大部屋（10名）", capacity: 10, pricePerNight: 25000, totalRooms: 2, bookedRooms: 0 },
+          { type: "貸切（15名）", capacity: 15, pricePerNight: 45000, totalRooms: 1, bookedRooms: 0 }
+        ],
+        rating: 4.0, reviewCount: 312,
+        imageUrl: "https://placehold.co/400x250/3d6b35/white?text=ロッジ+ふじや",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/", jalan: "https://www.jalan.net/", official: "" },
+        tags: ["グループ向け", "リーズナブル", "ドミトリー", "貸切可"]
+      },
+      {
+        id: 6, name: "越後湯沢 HATAGO井仙", area: "越後湯沢", areaDetail: "越後湯沢駅西口徒歩1分",
+        distanceToVenue: "シャトルバス約40分", address: "新潟県南魚沼郡湯沢町湯沢2455",
+        description: "越後湯沢駅から徒歩1分の好立地。地元食材を活かした料理と天然温泉が自慢。フジロックへのシャトルバス乗り場も近い。",
+        amenities: ["温泉", "レストラン", "駐車場", "Wi-Fi", "駅近"],
+        roomTypes: [
+          { type: "和室（2名）", capacity: 2, pricePerNight: 18000, totalRooms: 8, bookedRooms: 7 },
+          { type: "和洋室（4名）", capacity: 4, pricePerNight: 32000, totalRooms: 5, bookedRooms: 4 },
+          { type: "特別室（6名）", capacity: 6, pricePerNight: 50000, totalRooms: 2, bookedRooms: 1 }
+        ],
+        rating: 4.5, reviewCount: 687,
+        imageUrl: "https://placehold.co/400x250/8b6914/white?text=HATAGO井仙",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/HOTEL/8078/8078.html", jalan: "https://www.jalan.net/yad302578/", official: "https://hatago-isen.jp/" },
+        tags: ["駅近", "温泉", "高評価", "料理自慢"]
+      },
+      {
+        id: 7, name: "NASPAニューオータニ", area: "越後湯沢", areaDetail: "越後湯沢駅から送迎バス3分",
+        distanceToVenue: "シャトルバス約45分", address: "新潟県南魚沼郡湯沢町湯沢2117-9",
+        description: "ニューオータニグループの大型リゾートホテル。充実した温泉施設とプール、多彩なレストランが魅力。グループ向けの広い部屋あり。",
+        amenities: ["温泉", "プール", "レストラン", "駐車場", "Wi-Fi", "送迎バス", "エステ"],
+        roomTypes: [
+          { type: "スタンダードツイン", capacity: 2, pricePerNight: 22000, totalRooms: 40, bookedRooms: 37 },
+          { type: "デラックスツイン", capacity: 3, pricePerNight: 30000, totalRooms: 20, bookedRooms: 18 },
+          { type: "ファミリールーム", capacity: 5, pricePerNight: 45000, totalRooms: 10, bookedRooms: 8 },
+          { type: "和洋スイート（8名）", capacity: 8, pricePerNight: 95000, totalRooms: 3, bookedRooms: 2 }
+        ],
+        rating: 4.3, reviewCount: 1243,
+        imageUrl: "https://placehold.co/400x250/1a4a6b/white?text=NASPAニューオータニ",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/HOTEL/6631/6631.html", jalan: "https://www.jalan.net/yad315631/", official: "https://www.naspa.co.jp/" },
+        tags: ["大型", "温泉", "プール", "高級"]
+      },
+      {
+        id: 8, name: "湯沢グランドホテル", area: "越後湯沢", areaDetail: "越後湯沢駅西口徒歩3分",
+        distanceToVenue: "シャトルバス約40分", address: "新潟県南魚沼郡湯沢町湯沢2494",
+        description: "越後湯沢駅から徒歩3分。28種の温泉が楽しめる大浴場が自慢。バイキングスタイルの食事も人気。",
+        amenities: ["温泉", "レストラン", "駐車場", "Wi-Fi", "駅近", "売店"],
+        roomTypes: [
+          { type: "和室8畳（3名）", capacity: 3, pricePerNight: 14000, totalRooms: 25, bookedRooms: 23 },
+          { type: "和室12畳（5名）", capacity: 5, pricePerNight: 22000, totalRooms: 15, bookedRooms: 13 },
+          { type: "和洋室（6名）", capacity: 6, pricePerNight: 30000, totalRooms: 8, bookedRooms: 6 },
+          { type: "特別和室（10名）", capacity: 10, pricePerNight: 55000, totalRooms: 3, bookedRooms: 1 }
+        ],
+        rating: 4.1, reviewCount: 932,
+        imageUrl: "https://placehold.co/400x250/2a5a7a/white?text=湯沢グランドホテル",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/HOTEL/7063/7063.html", jalan: "https://www.jalan.net/yad312063/", official: "https://www.yuzawa-grand.com/" },
+        tags: ["駅近", "温泉充実", "バイキング", "グループ向け"]
+      },
+      {
+        id: 9, name: "越後のお宿 いなもと", area: "越後湯沢", areaDetail: "越後湯沢駅東口徒歩1分",
+        distanceToVenue: "シャトルバス約40分", address: "新潟県南魚沼郡湯沢町湯沢2497",
+        description: "駅直結の老舗温泉旅館。源泉かけ流しの温泉と、越後の旬を活かした懐石料理が堪能できる。",
+        amenities: ["温泉（源泉かけ流し）", "レストラン", "駐車場", "Wi-Fi", "駅直結"],
+        roomTypes: [
+          { type: "和室8畳（2名）", capacity: 2, pricePerNight: 16000, totalRooms: 15, bookedRooms: 14 },
+          { type: "和室10畳（4名）", capacity: 4, pricePerNight: 28000, totalRooms: 10, bookedRooms: 9 },
+          { type: "和室12畳（5名）", capacity: 5, pricePerNight: 35000, totalRooms: 5, bookedRooms: 4 },
+          { type: "特別室（8名）", capacity: 8, pricePerNight: 75000, totalRooms: 2, bookedRooms: 1 }
+        ],
+        rating: 4.4, reviewCount: 756,
+        imageUrl: "https://placehold.co/400x250/7a4a2a/white?text=いなもと",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/HOTEL/7045/7045.html", jalan: "https://www.jalan.net/yad322045/", official: "https://www.inamoto.co.jp/" },
+        tags: ["駅直結", "源泉かけ流し", "懐石料理", "老舗"]
+      },
+      {
+        id: 10, name: "松泉閣 花月", area: "越後湯沢", areaDetail: "越後湯沢駅西口徒歩5分",
+        distanceToVenue: "シャトルバス約40分", address: "新潟県南魚沼郡湯沢町湯沢318-5",
+        description: "純和風の温泉旅館。庭園露天風呂と創作和食が評判。落ち着いた雰囲気でゆったり過ごせる。",
+        amenities: ["温泉（露天風呂）", "レストラン", "駐車場", "Wi-Fi", "庭園"],
+        roomTypes: [
+          { type: "和室8畳", capacity: 3, pricePerNight: 20000, totalRooms: 10, bookedRooms: 9 },
+          { type: "和室10畳", capacity: 4, pricePerNight: 28000, totalRooms: 8, bookedRooms: 7 },
+          { type: "特別和室（6名）", capacity: 6, pricePerNight: 48000, totalRooms: 3, bookedRooms: 2 }
+        ],
+        rating: 4.6, reviewCount: 523,
+        imageUrl: "https://placehold.co/400x250/6b4a14/white?text=松泉閣+花月",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/HOTEL/7070/7070.html", jalan: "https://www.jalan.net/yad332070/", official: "https://www.kagetsu-yuzawa.jp/" },
+        tags: ["露天風呂", "高評価", "和風旅館", "料理自慢"]
+      },
+      {
+        id: 11, name: "ホテルスポーリア湯沢", area: "越後湯沢", areaDetail: "越後湯沢駅西口徒歩3分",
+        distanceToVenue: "シャトルバス約40分", address: "新潟県南魚沼郡湯沢町湯沢2442",
+        description: "駅チカでリーズナブルなビジネスホテルタイプ。シンプルで清潔な客室。コンビニも近く利便性が高い。",
+        amenities: ["大浴場", "駐車場", "Wi-Fi", "駅近", "自販機"],
+        roomTypes: [
+          { type: "シングル", capacity: 1, pricePerNight: 7000, totalRooms: 20, bookedRooms: 18 },
+          { type: "ツイン", capacity: 2, pricePerNight: 12000, totalRooms: 15, bookedRooms: 13 },
+          { type: "トリプル", capacity: 3, pricePerNight: 16000, totalRooms: 8, bookedRooms: 6 },
+          { type: "和室（5名）", capacity: 5, pricePerNight: 22000, totalRooms: 5, bookedRooms: 3 }
+        ],
+        rating: 3.7, reviewCount: 445,
+        imageUrl: "https://placehold.co/400x250/3a5a8a/white?text=スポーリア湯沢",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/", jalan: "https://www.jalan.net/", official: "" },
+        tags: ["駅近", "リーズナブル", "ビジネスホテル"]
+      },
+      {
+        id: 12, name: "湯沢東映ホテル", area: "越後湯沢", areaDetail: "越後湯沢駅から車5分",
+        distanceToVenue: "シャトルバス約45分", address: "新潟県南魚沼郡湯沢町湯沢3459",
+        description: "広い敷地に建つリゾートホテル。大宴会場もあり、団体・グループ利用にも対応。温泉とバイキングが人気。",
+        amenities: ["温泉", "レストラン", "駐車場", "Wi-Fi", "宴会場", "カラオケ"],
+        roomTypes: [
+          { type: "和室10畳（4名）", capacity: 4, pricePerNight: 15000, totalRooms: 20, bookedRooms: 17 },
+          { type: "和室12畳（6名）", capacity: 6, pricePerNight: 24000, totalRooms: 10, bookedRooms: 8 },
+          { type: "和室16畳（8名）", capacity: 8, pricePerNight: 35000, totalRooms: 5, bookedRooms: 3 },
+          { type: "大広間（15名）", capacity: 15, pricePerNight: 60000, totalRooms: 2, bookedRooms: 1 }
+        ],
+        rating: 3.9, reviewCount: 678,
+        imageUrl: "https://placehold.co/400x250/4a3a7a/white?text=湯沢東映ホテル",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/", jalan: "https://www.jalan.net/", official: "" },
+        tags: ["グループ向け", "温泉", "バイキング", "宴会場"]
+      },
+      {
+        id: 13, name: "湯沢ニューオーシャン", area: "越後湯沢", areaDetail: "越後湯沢駅西口徒歩2分",
+        distanceToVenue: "シャトルバス約40分", address: "新潟県南魚沼郡湯沢町湯沢2521",
+        description: "駅近の温泉旅館。コスパが良く、グループでの利用に向いている。展望風呂から湯沢の街並みを一望。",
+        amenities: ["温泉（展望風呂）", "レストラン", "駐車場", "Wi-Fi", "駅近"],
+        roomTypes: [
+          { type: "和室8畳（3名）", capacity: 3, pricePerNight: 11000, totalRooms: 12, bookedRooms: 10 },
+          { type: "和室10畳（5名）", capacity: 5, pricePerNight: 18000, totalRooms: 8, bookedRooms: 6 },
+          { type: "和室14畳（7名）", capacity: 7, pricePerNight: 28000, totalRooms: 4, bookedRooms: 2 },
+          { type: "特別和室（10名）", capacity: 10, pricePerNight: 42000, totalRooms: 2, bookedRooms: 0 }
+        ],
+        rating: 3.8, reviewCount: 389,
+        imageUrl: "https://placehold.co/400x250/5a6a8a/white?text=湯沢ニューオーシャン",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/", jalan: "https://www.jalan.net/", official: "" },
+        tags: ["駅近", "コスパ良好", "展望風呂", "グループ向け"]
+      },
+      {
+        id: 14, name: "雪国の宿 高半", area: "越後湯沢", areaDetail: "越後湯沢駅から徒歩7分",
+        distanceToVenue: "シャトルバス約45分", address: "新潟県南魚沼郡湯沢町湯沢923",
+        description: "川端康成「雪国」執筆の宿として有名な歴史ある温泉旅館。かけ流しの名湯「卵の湯」は必体験。",
+        amenities: ["温泉（かけ流し）", "レストラン", "駐車場", "Wi-Fi", "歴史的建造物"],
+        roomTypes: [
+          { type: "和室8畳（2名）", capacity: 2, pricePerNight: 22000, totalRooms: 8, bookedRooms: 7 },
+          { type: "和室10畳（4名）", capacity: 4, pricePerNight: 35000, totalRooms: 6, bookedRooms: 5 },
+          { type: "和室12畳（5名）", capacity: 5, pricePerNight: 42000, totalRooms: 4, bookedRooms: 3 },
+          { type: "特別室（6名）", capacity: 6, pricePerNight: 60000, totalRooms: 2, bookedRooms: 2 }
+        ],
+        rating: 4.5, reviewCount: 812,
+        imageUrl: "https://placehold.co/400x250/5a4a2a/white?text=雪国の宿+高半",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/HOTEL/7091/7091.html", jalan: "https://www.jalan.net/yad322091/", official: "https://www.takahan.co.jp/" },
+        tags: ["歴史", "源泉かけ流し", "文学の宿", "高評価"]
+      },
+      {
+        id: 15, name: "エンゼルグランディア越後中里", area: "越後湯沢", areaDetail: "越後中里駅直結",
+        distanceToVenue: "車約30分", address: "新潟県南魚沼郡湯沢町土樽4707-1",
+        description: "全室スイート仕様のリゾートマンション型ホテル。キッチン付きで長期滞在に最適。温泉プールも完備でファミリーにも人気。",
+        amenities: ["温泉", "プール", "キッチン付き", "駐車場", "Wi-Fi", "コインランドリー", "売店"],
+        roomTypes: [
+          { type: "1LDK（4名）", capacity: 4, pricePerNight: 18000, totalRooms: 30, bookedRooms: 26 },
+          { type: "2LDK（6名）", capacity: 6, pricePerNight: 28000, totalRooms: 20, bookedRooms: 16 },
+          { type: "3LDK（10名）", capacity: 10, pricePerNight: 42000, totalRooms: 8, bookedRooms: 5 }
+        ],
+        rating: 4.1, reviewCount: 1356,
+        imageUrl: "https://placehold.co/400x250/2a7a5a/white?text=エンゼルグランディア",
+        bookingUrls: { rakuten: "https://travel.rakuten.co.jp/HOTEL/15281/15281.html", jalan: "https://www.jalan.net/yad375281/", official: "https://www.angel-g.co.jp/" },
+        tags: ["キッチン付き", "長期滞在", "プール", "グループ向け", "温泉"]
+      }
+    ];
+
+    // ===========================
+    // 部屋組み合わせアルゴリズム
+    // ===========================
+    function findRoomCombinations(availableRooms, targetGuests, maxBudget) {
+      const combinations = [];
+      for (const room of availableRooms) {
+        if (room.capacity >= targetGuests && room.availableCount >= 1) {
+          const combo = { rooms: [{ ...room, useCount: 1 }], totalCapacity: room.capacity, totalPrice: room.pricePerNight, roomSummary: room.type + ' × 1室' };
+          if (combo.totalPrice <= maxBudget) combinations.push(combo);
+        }
+      }
+      for (const room of availableRooms) {
+        const roomsNeeded = Math.ceil(targetGuests / room.capacity);
+        if (roomsNeeded > 1 && roomsNeeded <= room.availableCount) {
+          const combo = { rooms: [{ ...room, useCount: roomsNeeded }], totalCapacity: room.capacity * roomsNeeded, totalPrice: room.pricePerNight * roomsNeeded, roomSummary: room.type + ' × ' + roomsNeeded + '室' };
+          if (combo.totalPrice <= maxBudget) combinations.push(combo);
+        }
+      }
+      for (let i = 0; i < availableRooms.length; i++) {
+        for (let j = i + 1; j < availableRooms.length; j++) {
+          const room1 = availableRooms[i], room2 = availableRooms[j];
+          for (let r1Count = 1; r1Count <= room1.availableCount; r1Count++) {
+            const remaining = targetGuests - (room1.capacity * r1Count);
+            if (remaining <= 0) break;
+            const r2Count = Math.ceil(remaining / room2.capacity);
+            if (r2Count <= room2.availableCount && r2Count > 0) {
+              const combo = {
+                rooms: [{ ...room1, useCount: r1Count }, { ...room2, useCount: r2Count }],
+                totalCapacity: (room1.capacity * r1Count) + (room2.capacity * r2Count),
+                totalPrice: (room1.pricePerNight * r1Count) + (room2.pricePerNight * r2Count),
+                roomSummary: room1.type + ' × ' + r1Count + '室 + ' + room2.type + ' × ' + r2Count + '室'
+              };
+              if (combo.totalCapacity >= targetGuests && combo.totalPrice <= maxBudget) combinations.push(combo);
+            }
+          }
+        }
+      }
+      const unique = [], seen = new Set();
+      for (const c of combinations) { if (!seen.has(c.roomSummary)) { seen.add(c.roomSummary); unique.push(c); } }
+      return unique.sort((a, b) => a.totalPrice - b.totalPrice);
+    }
+
+    // ===========================
+    // 状態管理
+    // ===========================
+    let currentFilters = { tags: [], onlyAvailable: false };
+
+    // ===========================
+    // 検索実行（ローカル）
+    // ===========================
+    function searchHotels() {
+      const area = document.getElementById('area').value;
+      const checkin = document.getElementById('checkin').value;
+      const checkout = document.getElementById('checkout').value;
+      const guestCount = parseInt(document.getElementById('guests').value) || 10;
+      const budgetVal = document.getElementById('budget').value;
+      const maxBudget = budgetVal ? parseInt(budgetVal) : Infinity;
+      const sort = document.getElementById('sortSelect').value;
+
+      let nights = 4;
+      if (checkin && checkout) {
+        const ci = new Date(checkin), co = new Date(checkout);
+        nights = Math.ceil((co - ci) / (1000 * 60 * 60 * 24));
+      }
+
+      let results = JSON.parse(JSON.stringify(hotels));
+      if (area && area !== 'all') results = results.filter(h => h.area === area);
+
+      results = results.map(hotel => {
+        const availableRooms = hotel.roomTypes.filter(rt => rt.bookedRooms < rt.totalRooms).map(rt => ({ ...rt, availableCount: rt.totalRooms - rt.bookedRooms }));
+        const combinations = findRoomCombinations(availableRooms, guestCount, maxBudget);
+        return {
+          ...hotel, availableRooms, combinations,
+          hasAvailability: combinations.length > 0,
+          cheapestCombination: combinations.length > 0 ? combinations.reduce((min, c) => c.totalPrice < min.totalPrice ? c : min, combinations[0]) : null
+        };
+      });
+
+      if (currentFilters.onlyAvailable) results = results.filter(h => h.hasAvailability);
+      if (currentFilters.tags.length > 0) results = results.filter(h => currentFilters.tags.some(t => h.tags.includes(t)));
+
+      if (sort === 'price') {
+        results.sort((a, b) => {
+          const pA = a.cheapestCombination ? a.cheapestCombination.totalPrice : Infinity;
+          const pB = b.cheapestCombination ? b.cheapestCombination.totalPrice : Infinity;
+          return pA - pB;
+        });
+      } else if (sort === 'rating') {
+        results.sort((a, b) => b.rating - a.rating);
+      }
+
+      const data = {
+        searchParams: { area: area || 'all', guests: guestCount, checkin: checkin || '2026-07-23', checkout: checkout || '2026-07-27', nights, budget: maxBudget === Infinity ? null : maxBudget },
+        totalResults: results.length,
+        availableCount: results.filter(h => h.hasAvailability).length,
+        hotels: results.map(h => ({
+          ...h,
+          combinations: h.combinations.map(c => ({ ...c, totalPriceAllNights: c.totalPrice * nights, pricePerPersonPerNight: Math.ceil(c.totalPrice / guestCount) })),
+          cheapestCombination: h.cheapestCombination ? { ...h.cheapestCombination, totalPriceAllNights: h.cheapestCombination.totalPrice * nights, pricePerPersonPerNight: Math.ceil(h.cheapestCombination.totalPrice / guestCount) } : null
+        }))
+      };
+      renderStats(data);
+      renderResults(data);
+    }
+
+    // ===========================
+    // 描画
+    // ===========================
+    function renderStats(data) {
+      const panel = document.getElementById('statsPanel');
+      const nights = data.searchParams.nights, guests = data.searchParams.guests;
+      let cheapest = null;
+      for (const h of data.hotels) { if (h.cheapestCombination) { const ppn = h.cheapestCombination.pricePerPersonPerNight; if (!cheapest || ppn < cheapest) cheapest = ppn; } }
+      panel.innerHTML = `
+        <div class="stat-card"><div class="stat-value">${data.totalResults}</div><div class="stat-label">検索対象施設</div></div>
+        <div class="stat-card"><div class="stat-value" style="color:${data.availableCount > 0 ? 'var(--success)' : 'var(--danger)'}">${data.availableCount}</div><div class="stat-label">${guests}名で空室あり</div></div>
+        <div class="stat-card"><div class="stat-value">${nights}泊</div><div class="stat-label">${data.searchParams.checkin} 〜 ${data.searchParams.checkout}</div></div>
+        <div class="stat-card"><div class="stat-value">${cheapest ? '¥' + cheapest.toLocaleString() : '-'}</div><div class="stat-label">最安 1人1泊あたり</div></div>`;
+    }
+
+    function renderResults(data) {
+      const grid = document.getElementById('hotelGrid');
+      const count = document.getElementById('resultsCount');
+      count.innerHTML = `全 <strong>${data.totalResults}</strong> 施設中 <strong style="color:${data.availableCount > 0 ? 'var(--success)' : 'var(--danger)'}">${data.availableCount}</strong> 施設で ${data.searchParams.guests}名の空室あり`;
+      if (data.hotels.length === 0) { grid.innerHTML = `<div class="loading" style="grid-column:1/-1;"><div>🔍 条件に一致する宿泊施設が見つかりませんでした。条件を変更して再検索してください。</div></div>`; return; }
+      const nights = data.searchParams.nights, guests = data.searchParams.guests;
+      grid.innerHTML = data.hotels.map(hotel => {
+        const isAvailable = hotel.hasAvailability, cheapest = hotel.cheapestCombination;
+        let badgeClass, badgeText;
+        if (!isAvailable) { badgeClass = 'full'; badgeText = '満室'; }
+        else { const totalAvail = hotel.availableRooms.reduce((s, r) => s + r.availableCount, 0); if (totalAvail <= 2) { badgeClass = 'limited'; badgeText = '残りわずか（空' + totalAvail + '室）'; } else { badgeClass = 'available'; badgeText = '空室あり（' + totalAvail + '室）'; } }
+        return `<div class="hotel-card ${!isAvailable ? 'unavailable' : ''}" style="position:relative;">
+          ${!isAvailable ? '<div class="sold-out-overlay"><div class="sold-out-text">満室</div></div>' : ''}
+          <img class="card-image" src="${hotel.imageUrl}" alt="${hotel.name}" loading="lazy">
+          <span class="area-badge">📍 ${hotel.area}</span>
+          <span class="availability-badge ${badgeClass}">${badgeText}</span>
+          <div class="card-body">
+            <div class="card-header"><div class="hotel-name">${hotel.name}</div><div class="hotel-rating">⭐ ${hotel.rating} <span style="font-size:0.72rem;color:#999;">(${hotel.reviewCount}件)</span></div></div>
+            <div class="hotel-meta"><span class="distance">🎵 会場まで: ${hotel.distanceToVenue}</span><span>📍 ${hotel.areaDetail}</span></div>
+            <div class="hotel-desc">${hotel.description}</div>
+            <div class="hotel-tags">${hotel.tags.map(t => '<span class="hotel-tag">' + t + '</span>').join('')}</div>
+            <div class="amenities-row">${hotel.amenities.slice(0, 5).map(a => '<span class="amenity">✓ ' + a + '</span>').join('')}${hotel.amenities.length > 5 ? '<span class="amenity">他' + (hotel.amenities.length - 5) + '件</span>' : ''}</div>
+            ${isAvailable ? `
+              <div class="total-price-box"><div><div class="total-price-label">最安プラン（${nights}泊${guests}名）</div><div class="total-price-sub">${cheapest.roomSummary}</div></div><div style="text-align:right;"><div class="total-price-value">¥${cheapest.totalPriceAllNights.toLocaleString()}</div><div class="total-price-sub">1人あたり ¥${(Math.ceil(cheapest.totalPriceAllNights / guests)).toLocaleString()}</div></div></div>
+              <div class="availability-section"><div class="availability-title">🛏️ 予約可能な部屋の組み合わせ <button class="detail-toggle" onclick="toggleDetails(${hotel.id})">全${hotel.combinations.length}パターン表示</button></div>
+              <div class="room-details" id="details-${hotel.id}">${hotel.combinations.slice(0, 5).map(combo => '<div class="room-combo"><span class="room-combo-name">' + combo.roomSummary + '</span><span><span class="room-combo-price">¥' + (combo.totalPrice * nights).toLocaleString() + '</span><span class="room-combo-per-person">(@¥' + (Math.ceil(combo.totalPrice * nights / guests)).toLocaleString() + '/人)</span></span></div>').join('')}${hotel.combinations.length > 5 ? '<div style="text-align:center;padding:4px;font-size:0.75rem;color:var(--text-light);">他 ' + (hotel.combinations.length - 5) + ' パターンあり</div>' : ''}</div></div>
+            ` : `<div class="no-availability">😞 ${guests}名で宿泊可能な空室がありません</div>`}
+            <div class="booking-buttons">
+              <a href="${hotel.bookingUrls.rakuten}" target="_blank" rel="noopener" class="btn-book rakuten">楽天トラベル</a>
+              <a href="${hotel.bookingUrls.jalan}" target="_blank" rel="noopener" class="btn-book jalan">じゃらん</a>
+              ${hotel.bookingUrls.official ? '<a href="' + hotel.bookingUrls.official + '" target="_blank" rel="noopener" class="btn-book official">公式サイト</a>' : ''}
+            </div>
+          </div></div>`;
+      }).join('');
+    }
+
+    function toggleFilter(el) { el.classList.toggle('active'); currentFilters.onlyAvailable = el.classList.contains('active'); searchHotels(); }
+    function toggleTag(el) { el.classList.toggle('active'); const tag = el.dataset.tag; if (el.classList.contains('active')) currentFilters.tags.push(tag); else currentFilters.tags = currentFilters.tags.filter(t => t !== tag); searchHotels(); }
+    function toggleDetails(hotelId) { document.getElementById('details-' + hotelId).classList.toggle('show'); }
+
+    document.addEventListener('DOMContentLoaded', () => { searchHotels(); });
+  </script>
+</body>
+</html>
